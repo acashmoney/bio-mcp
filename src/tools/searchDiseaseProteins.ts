@@ -7,6 +7,31 @@ import {
 import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
+// Define types for the API responses
+interface SearchResult {
+    identifier: string;
+    score?: number;
+    title?: string; 
+}
+
+interface SearchResponse {
+    result_set?: SearchResult[];
+    total_count?: number;
+}
+
+interface StructureCitation {
+    title?: string;
+    journal_abbrev?: string;
+    year?: number;
+}
+
+interface StructureData {
+    struct?: {
+        title?: string;
+    };
+    rcsb_primary_citation?: StructureCitation;
+}
+
 // Define the tool schema
 export const searchDiseaseProteinsSchema = {
     disease: z.string().describe("Disease name (e.g., 'covid', 'alzheimer's')"),
@@ -67,7 +92,7 @@ export async function searchDiseaseProteins({ disease }: { disease: string }, ex
     
     console.error(`DEBUG: Using POST request to search API`);
     // Make a POST request with the properly structured query
-    const searchData: any = await makeApiRequest(RCSB_PDB_SEARCH_API, 'POST', searchQuery);
+    const searchData = await makeApiRequest(RCSB_PDB_SEARCH_API, 'POST', searchQuery) as SearchResponse;
 
     if (!searchData || !searchData.result_set) {
         return {
@@ -124,7 +149,7 @@ export async function searchDiseaseProteins({ disease }: { disease: string }, ex
         };
         
         console.error(`DEBUG: No results with specific search, trying broader search with POST request`);
-        const altSearchData: any = await makeApiRequest(RCSB_PDB_SEARCH_API, 'POST', altSearchQuery);
+        const altSearchData = await makeApiRequest(RCSB_PDB_SEARCH_API, 'POST', altSearchQuery) as SearchResponse;
         
         if (!altSearchData || !altSearchData.result_set || altSearchData.result_set.length === 0) {
             return {
@@ -149,7 +174,7 @@ export async function searchDiseaseProteins({ disease }: { disease: string }, ex
             console.error(`DEBUG: Fetching details for PDB ID: ${pdbId}`);
             
             const structureUrl = `${RCSB_PDB_DATA_API}/core/entry/${pdbId}`;
-            const structureData: any = await makeApiRequest(structureUrl);
+            const structureData = await makeApiRequest(structureUrl) as StructureData;
 
             if (!structureData) {
                 resultsText += `PDB ID: ${pdbId} (Error fetching details)\n---\n\n`;
@@ -188,7 +213,7 @@ export async function searchDiseaseProteins({ disease }: { disease: string }, ex
         console.error(`DEBUG: Fetching details for PDB ID: ${pdbId}`);
         
         const structureUrl = `${RCSB_PDB_DATA_API}/core/entry/${pdbId}`;
-        const structureData: any = await makeApiRequest(structureUrl);
+        const structureData = await makeApiRequest(structureUrl) as StructureData;
 
         if (!structureData) {
             resultsText += `PDB ID: ${pdbId} (Error fetching details)\n---\n\n`;

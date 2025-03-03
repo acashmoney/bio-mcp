@@ -1,17 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
-// Import utilities and tools
-import { 
-    // Only keep what's actually used elsewhere in the codebase
-    // USER_AGENT,
-    // DEFAULT_API_TIMEOUT,
-    // RCSB_PDB_DATA_API,
-    // RCSB_PDB_SEARCH_API,
-    // PDBE_API_BASE,
-    // UNIPROT_API_BASE 
-} from "./utils.js";
-
 import { 
     analyzeActiveSite, 
     analyzeActiveSiteSchema 
@@ -61,18 +50,15 @@ let transport: StdioServerTransport | null = null;
  * Send a keep-alive message by executing a no-op ping that forces the transport to stay active
  */
 function sendKeepAlive() {
-    console.error("DEBUG: Sending keep-alive ping");
-    
-    // Instead of a custom notification, we log an innocuous debug message
-    // This ensures activity on the transport without requiring special protocol support
-    console.error(`DEBUG: Keep-alive ping at ${new Date().toISOString()}`);
+    console.error("Sending keep-alive ping");
+    console.error(`Keep-alive ping at ${new Date().toISOString()}`);
 }
 
 /**
  * Clean up resources when shutting down
  */
 function cleanup() {
-    console.error("DEBUG: Cleaning up resources...");
+    console.error("Cleaning up resources...");
     
     if (keepAliveInterval) {
         clearInterval(keepAliveInterval);
@@ -82,10 +68,10 @@ function cleanup() {
     if (transport) {
         try {
             server.close().catch(error => {
-                console.error("DEBUG: Error during close in cleanup:", error);
+                console.error("Error during close in cleanup:", error);
             });
         } catch (error) {
-            console.error("DEBUG: Error during cleanup:", error);
+            console.error("Error during cleanup:", error);
         }
     }
 }
@@ -94,13 +80,13 @@ function cleanup() {
  * Set up signal handlers for graceful shutdown
  */
 process.on('SIGINT', () => {
-    console.error("DEBUG: Received SIGINT signal");
+    console.error("Received SIGINT signal");
     cleanup();
     process.exit(0);
 });
 
 process.on('SIGTERM', () => {
-    console.error("DEBUG: Received SIGTERM signal");
+    console.error("Received SIGTERM signal");
     cleanup();
     process.exit(0);
 });

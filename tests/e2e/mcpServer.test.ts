@@ -66,7 +66,7 @@ jest.mock('../../src/utils', () => ({
   RCSB_PDB_DATA_API: 'https://data.rcsb.org/rest/v1',
   UNIPROT_API_BASE: 'https://rest.uniprot.org/uniprotkb',
   RCSB_PDB_SEARCH_API: 'https://search.rcsb.org/rcsbsearch/v2/query',
-  makeApiRequest: jest.fn(async (url: string, method?: string, body?: any) => {
+  makeApiRequest: jest.fn(async (url: string, method?: string, body?: Record<string, unknown>) => {
     // Handle REST API requests for PDB entries
     if (url.includes('/core/entry/')) {
       // Extract PDB ID and endpoint

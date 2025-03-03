@@ -1,5 +1,17 @@
 import { makeApiRequest } from '../../src/utils';
 
+// Define interfaces for API responses
+interface StructureData {
+  struct?: {
+    title?: string;
+  };
+}
+
+interface SearchResponse {
+  result_set?: unknown[];
+  total_count?: number;
+}
+
 // This should test real API interactions with timeouts
 describe('PDB API Integration', () => {
   jest.setTimeout(15000); // Allow more time for API calls
@@ -8,11 +20,11 @@ describe('PDB API Integration', () => {
     const pdbId = '6LU7'; // COVID-19 main protease
     const url = `https://data.rcsb.org/rest/v1/core/entry/${pdbId}`;
     
-    const result = await makeApiRequest(url);
+    const result = await makeApiRequest(url) as StructureData;
     
     expect(result).not.toBeNull();
     expect(result.struct).toBeDefined();
-    expect(result.struct.title).toContain('COVID-19');
+    expect(result.struct?.title).toContain('COVID-19');
   });
 
   it('should handle non-existent PDB IDs', async () => {
@@ -50,11 +62,11 @@ describe('PDB API Integration', () => {
       }
     };
     
-    const result = await makeApiRequest(searchUrl, 'POST', searchQuery);
+    const result = await makeApiRequest(searchUrl, 'POST', searchQuery) as SearchResponse;
     
     expect(result).not.toBeNull();
     expect(result.result_set).toBeDefined();
     expect(Array.isArray(result.result_set)).toBe(true);
-    expect(result.result_set.length).toBeGreaterThan(0);
+    expect(result.result_set?.length).toBeGreaterThan(0);
   });
 });

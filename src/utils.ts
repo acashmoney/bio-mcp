@@ -18,9 +18,9 @@ export const UNIPROT_API_BASE = 'https://rest.uniprot.org/uniprotkb';
 export async function makeApiRequest(
     url: string, 
     method: string = 'GET', 
-    body?: any, 
+    body?: Record<string, unknown>, 
     timeout: number = DEFAULT_API_TIMEOUT
-): Promise<any> {
+): Promise<unknown> {
     const headers: Record<string, string> = {
         "User-Agent": USER_AGENT,
         "Accept": "application/json",
@@ -40,9 +40,9 @@ export async function makeApiRequest(
     }
 
     try {
-        console.error(`DEBUG: Making ${method} request to: ${url}`);
+        console.error(`Making ${method} request to: ${url}`);
         if (body) {
-            console.error(`DEBUG: Request body: ${JSON.stringify(body).substring(0, 200)}...`);
+            console.error(`Request body: ${JSON.stringify(body).substring(0, 200)}...`);
         }
         
         // Maximum of 3 retry attempts for transient network issues
@@ -60,21 +60,21 @@ export async function makeApiRequest(
                 response = await fetch(url, options);
                 clearTimeout(timeoutId);
                 break;
-            } catch (fetchError: any) {
+            } catch (fetchError: unknown) {
                 retries++;
                 
                 // Check if this was a timeout
-                if (fetchError.name === "AbortError") {
-                    console.error(`DEBUG: Request timeout (attempt ${retries}/${maxRetries}) for: ${url}`);
+                if (fetchError instanceof Error && fetchError.name === "AbortError") {
+                    console.error(`Request timeout (attempt ${retries}/${maxRetries}) for: ${url}`);
                 } else {
-                    console.error(`DEBUG: Fetch error (attempt ${retries}/${maxRetries}):`, fetchError);
+                    console.error(`Fetch error (attempt ${retries}/${maxRetries}):`, fetchError);
                 }
                 
                 if (retries >= maxRetries) throw fetchError;
                 
                 // Exponential backoff
                 const backoffTime = 1000 * Math.pow(2, retries - 1);
-                console.error(`DEBUG: Retrying after ${backoffTime}ms`);
+                console.error(`Retrying after ${backoffTime}ms`);
                 await new Promise(resolve => setTimeout(resolve, backoffTime));
             }
         }
@@ -83,14 +83,14 @@ export async function makeApiRequest(
             throw new Error("Failed to get a response after retries");
         }
         
-        console.error(`DEBUG: Response status: ${response.status}`);
+        console.error(`Response status: ${response.status}`);
         
         // For 404 errors with specific PDB IDs, try an alternative URL format
         if (response.status === 404 && url.includes('/core/entry/')) {
             const pdbId = url.split('/').pop()?.toUpperCase();
             // Try alternative endpoint for older entries
             if (pdbId && pdbId.length === 4) {
-                console.error(`DEBUG: Entry not found, trying alternative GraphQL approach for PDB ID: ${pdbId}`);
+                console.error(`Entry not found, trying alternative GraphQL approach for PDB ID: ${pdbId}`);
                 
                 const graphqlUrl = 'https://data.rcsb.org/graphql';
                 const graphqlQuery = {
@@ -117,32 +117,32 @@ export async function makeApiRequest(
                 if (graphqlResponse.ok) {
                     const graphqlData = await graphqlResponse.json();
                     if (graphqlData?.data?.entry) {
-                        console.error(`DEBUG: Successfully retrieved data via GraphQL`);
+                        console.error(`Successfully retrieved data via GraphQL`);
                         return graphqlData.data.entry;
                     }
                 }
-                console.error(`DEBUG: GraphQL approach also failed`);
+                console.error(`GraphQL approach also failed`);
             }
         }
         
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`DEBUG: Error response body: ${errorText.substring(0, 200)}`);
+            console.error(`Error response body: ${errorText.substring(0, 200)}`);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const responseText = await response.text();
-        console.error(`DEBUG: Response body first 300 chars: ${responseText.substring(0, 300)}`);
+        console.error(`Response body first 300 chars: ${responseText.substring(0, 300)}`);
         
         try {
             const data = JSON.parse(responseText);
             return data;
         } catch (parseError) {
-            console.error(`DEBUG: JSON parse error: ${parseError}`);
+            console.error(`JSON parse error: ${parseError}`);
             
             // If parsing fails but we have response text, try to salvage the data
             if (responseText && responseText.length > 0) {
-                console.error(`DEBUG: Attempting to salvage partial data`);
+                console.error(`Attempting to salvage partial data`);
                 try {
                     // Create minimal structure with title from response text
                     const titleMatch = responseText.match(/"title"\s*:\s*"([^"]+)"/);
@@ -154,14 +154,14 @@ export async function makeApiRequest(
                         };
                     }
                 } catch (salvageError) {
-                    console.error(`DEBUG: Failed to salvage data:`, salvageError);
+                    console.error(`Failed to salvage data:`, salvageError);
                 }
             }
             
             return null;
         }
     } catch (error) {
-        console.error(`DEBUG: Error making API request to ${url}:`, error);
+        console.error(`Error making API request to ${url}:`, error);
         return null;
     }
 }
