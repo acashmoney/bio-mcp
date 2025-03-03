@@ -1,8 +1,8 @@
-# Bio-MCP
+# BioMCP
 
 ## Overview
 
-Bio-MCP is a Model Context Protocol (MCP) server designed to enhance large language models with protein structure analysis capabilities. It provides tools for analyzing protein active sites and searching for disease-related proteins by interfacing with established protein databases.
+BioMCP is a Model Context Protocol (MCP) server designed to enhance large language models with protein structure analysis capabilities. It provides tools for analyzing protein active sites and searching for disease-related proteins by interfacing with established protein databases.
 
 ## Features
 
@@ -12,11 +12,11 @@ Bio-MCP is a Model Context Protocol (MCP) server designed to enhance large langu
 
 ## Technical Details
 
-Bio-MCP implements the Model Context Protocol, allowing language models to access specialized protein structure knowledge without requiring this information to be part of their training data. The server handles API connections, data formatting, and error handling to provide reliable protein structure insights.
+BioMCP implements the Model Context Protocol, allowing language models to access specialized protein structure knowledge without requiring this information to be part of their training data. The server handles API connections, data formatting, and error handling to provide reliable protein structure insights.
 
 ## API Endpoints
 
-Bio-MCP exposes two primary tool endpoints:
+BioMCP exposes two primary tool endpoints:
 
 1. `analyze-active-site`: Provides detailed information about protein binding sites using a PDB ID
 2. `search-disease-proteins`: Returns proteins related to specified diseases or medical conditions

@@ -1,5 +1,5 @@
 // Define API constants
-export const USER_AGENT = 'PDB-Analysis-Tool/1.0';
+export const USER_AGENT = 'BioMCP/0.1.0';
 export const DEFAULT_API_TIMEOUT = 30000; // 30 seconds
 export const RCSB_PDB_DATA_API = 'https://data.rcsb.org/rest/v1';
 export const RCSB_PDB_SEARCH_API = 'https://search.rcsb.org/rcsbsearch/v2/query';

@@ -205,8 +205,8 @@ describe('MCP Server E2E Tests', () => {
   beforeAll(async () => {
     // Set up a test server instance
     server = new McpServer({
-      name: "pdb-analysis-test",
-      version: "1.0.0",
+      name: "bio-mcp-test",
+      version: "0.1.0",
     });
     
     // Add tools directly from our implementation

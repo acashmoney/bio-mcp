@@ -19,8 +19,8 @@ const KEEP_ALIVE_INTERVAL = 25000;
  */
 export function createServer() {
     const server = new McpServer({
-        name: "pdb-analysis",
-        version: "1.0.0",
+        name: "bio-mcp",
+        version: "0.1.0",
     });
 
     // Register the analyze-active-site tool
