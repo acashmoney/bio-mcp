@@ -1,4 +1,4 @@
-# BioMCP
+# BioMCP: Enabling agent-based biomedical R&D
 
 ![BioMCP](cover.png)
 
