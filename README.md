@@ -54,7 +54,7 @@ npm start
 
 3. Launch the MCP Inspector and connect to your local BioMCP server:
    ```bash
-   mcp-inspector --server-url http://localhost:3000
+   npx @modelcontextprotocol/inspector node build/index.js
    ```
 
 4. Use the inspector interface to test tools and view responses.
