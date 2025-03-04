@@ -19,7 +19,8 @@ export async function makeApiRequest(
     url: string, 
     method: string = 'GET', 
     body?: Record<string, unknown>, 
-    timeout: number = DEFAULT_API_TIMEOUT
+    timeout: number = DEFAULT_API_TIMEOUT,
+    testMode: boolean = false
 ): Promise<unknown> {
     const headers: Record<string, string> = {
         "User-Agent": USER_AGENT,
@@ -57,8 +58,17 @@ export async function makeApiRequest(
                 const timeoutId = setTimeout(() => controller.abort(), timeout);
                 options.signal = controller.signal;
                 
-                response = await fetch(url, options);
-                clearTimeout(timeoutId);
+                try {
+                    response = await fetch(url, options);
+                } finally {
+                    clearTimeout(timeoutId);
+                    
+                    // In test mode, we need to release all resources explicitly
+                    if (testMode && response) {
+                        // Force the response body to complete processing
+                        await response.text().catch(() => {});
+                    }
+                }
                 break;
             } catch (fetchError: unknown) {
                 retries++;

@@ -1,4 +1,4 @@
-import { makeApiRequest } from '../../src/utils';
+import { makeApiRequest } from '../../src/server/utils';
 
 // Need to extract makeApiRequest to a separate file or mock it for testing
 
@@ -33,7 +33,7 @@ describe('makeApiRequest', () => {
       text: jest.fn().mockResolvedValue('{"key": "value"}'),
     } as unknown as Response);
 
-    const result = await makeApiRequest('https://example.com/api');
+    const result = await makeApiRequest('https://example.com/api', 'GET', undefined, 30000, true);
     
     expect(fetch).toHaveBeenCalledWith(
       'https://example.com/api', 
@@ -52,7 +52,7 @@ describe('makeApiRequest', () => {
         text: jest.fn().mockResolvedValue('{"key": "value"}'),
       } as unknown as Response);
 
-    const result = await makeApiRequest('https://example.com/api');
+    const result = await makeApiRequest('https://example.com/api', 'GET', undefined, 30000, true);
     
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(result).toEqual({ key: 'value' });
@@ -71,7 +71,7 @@ describe('makeApiRequest', () => {
         text: jest.fn().mockResolvedValue('{"key": "value"}'),
       } as unknown as Response);
 
-    const result = await makeApiRequest('https://example.com/api');
+    const result = await makeApiRequest('https://example.com/api', 'GET', undefined, 30000, true);
     
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(result).toEqual({ key: 'value' });
@@ -85,7 +85,7 @@ describe('makeApiRequest', () => {
       text: jest.fn().mockResolvedValue('Not found'),
     } as unknown as Response);
 
-    const result = await makeApiRequest('https://example.com/api');
+    const result = await makeApiRequest('https://example.com/api', 'GET', undefined, 30000, true);
     
     expect(result).toBeNull();
   });

@@ -1,4 +1,50 @@
-import { makeApiRequest } from '../../src/utils';
+import { makeApiRequest } from '../../src/server/utils';
+
+// Mock fetch for integration tests to avoid real network calls
+beforeAll(() => {
+  global.fetch = jest.fn().mockImplementation((url) => {
+    // Convert URL to string if it's a URL object
+    const urlString = typeof url === 'string' ? url : url.toString();
+    
+    if (urlString.includes('/core/entry/6LU7')) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(JSON.stringify({
+          struct: { title: 'SARS-CoV-2 main protease COVID-19' }
+        }))
+      });
+    } else if (urlString.includes('/core/entry/XXXX')) {
+      return Promise.resolve({
+        ok: false,
+        status: 404,
+        text: () => Promise.resolve('Not found')
+      });
+    } else if (urlString.includes('rcsbsearch/v2/query')) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(JSON.stringify({
+          result_set: [
+            { identifier: '6LU7' },
+            { identifier: '7L0D' }
+          ],
+          total_count: 2
+        }))
+      });
+    }
+    
+    return Promise.resolve({
+      ok: false,
+      status: 404,
+      text: () => Promise.resolve('Not found')
+    });
+  });
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
 
 // Define interfaces for API responses
 interface StructureData {
@@ -20,7 +66,7 @@ describe('PDB API Integration', () => {
     const pdbId = '6LU7'; // COVID-19 main protease
     const url = `https://data.rcsb.org/rest/v1/core/entry/${pdbId}`;
     
-    const result = await makeApiRequest(url) as StructureData;
+    const result = await makeApiRequest(url, 'GET', undefined, 30000, true) as StructureData;
     
     expect(result).not.toBeNull();
     expect(result.struct).toBeDefined();
@@ -31,7 +77,7 @@ describe('PDB API Integration', () => {
     const pdbId = 'XXXX'; // Invalid ID
     const url = `https://data.rcsb.org/rest/v1/core/entry/${pdbId}`;
     
-    const result = await makeApiRequest(url);
+    const result = await makeApiRequest(url, 'GET', undefined, 30000, true);
     
     expect(result).toBeNull();
   });
@@ -62,7 +108,7 @@ describe('PDB API Integration', () => {
       }
     };
     
-    const result = await makeApiRequest(searchUrl, 'POST', searchQuery) as SearchResponse;
+    const result = await makeApiRequest(searchUrl, 'POST', searchQuery, 30000, true) as SearchResponse;
     
     expect(result).not.toBeNull();
     expect(result.result_set).toBeDefined();

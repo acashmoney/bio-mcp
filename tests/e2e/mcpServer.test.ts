@@ -62,7 +62,11 @@ beforeAll(() => {
 });
 
 // Before the mock for makeApiRequest, add these constants
-jest.mock('../../src/utils', () => ({
+jest.mock('../../src/utils', () => {
+  return require('../../src/server/utils');
+});
+
+jest.mock('../../src/server/utils', () => ({
   RCSB_PDB_DATA_API: 'https://data.rcsb.org/rest/v1',
   UNIPROT_API_BASE: 'https://rest.uniprot.org/uniprotkb',
   RCSB_PDB_SEARCH_API: 'https://search.rcsb.org/rcsbsearch/v2/query',
