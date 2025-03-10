@@ -1,5 +1,6 @@
 # BioMCP: Enabling agent-based biomedical R&D
 
+[![smithery badge](https://smithery.ai/badge/@acashmoney/bio-mcp)](https://smithery.ai/server/@acashmoney/bio-mcp)
 ![BioMCP](cover.png)
 
 ## Overview
@@ -27,6 +28,15 @@ BioMCP exposes two primary tools:
 
 ## Getting Started
 
+### Installing via Smithery
+
+To install BioMCP for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@acashmoney/bio-mcp):
+
+```bash
+npx -y @smithery/cli install @acashmoney/bio-mcp --client claude
+```
+
+### Manual Installation
 ```bash
 # Clone the repository
 git clone https://github.com/acashmoney/bio-mcp.git
